@@ -47,7 +47,7 @@ object PetriNet:
 
   // Defining extension methods for Marking
   extension [P](self: Marking[P])
-    /** Syntactic sugar for creating basic transitions
+    /** Syntactic sugar for creating basic transitions with no inhibitor arcs
      * Enables writing transitions as: place1 ~~> place2
      * @return A new Transition with no inhibitor arcs
      */
