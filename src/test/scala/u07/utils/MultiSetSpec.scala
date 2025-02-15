@@ -1,11 +1,9 @@
-package scala.u08.utils
+package u07.utils
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers.*
 
-import scala.u08.utils.MSet
-
-class MSetSpec extends AnyFunSuite{
+class MultiSetSpec extends AnyFunSuite{
 
   test("An empty MSet should have size 0"){
     assert( MSet[Int]().size == 0)
