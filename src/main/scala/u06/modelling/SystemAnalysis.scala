@@ -41,17 +41,36 @@ object SystemAnalysis:
           next <- system.next(path.last)
         yield path :+ next
 
-    def cachedPaths(s: S, depth: Int): Seq[Path[S]] =
-      // The cache keys are (state, depth)
-      val cache = collection.mutable.Map[(S, Int), Seq[Path[S]]]()
-      
-      // each intermediate call (for smaller depths) is cached. 
-      // Without the recursive helper, we are not caching the results of 
-      // intermediate calls, only caching the final overall result.
-      def retrievePaths(s: S, depth: Int): Seq[Path[S]] = cache.getOrElseUpdate((s, depth),
-        paths(s, depth)
-      )
-      retrievePaths(s, depth)
+    def bfsPaths(s: S, maxDepth: Int): Seq[Path[S]] =
+      import scala.collection.mutable
+
+      // A queue of paths (each path is a list of states).
+      val queue = mutable.Queue[List[S]]()
+      // Store each (state, depth) we have visited to avoid re-exploring it.
+      val visited = mutable.Set[(S, Int)]()
+      // A buffer for all generated paths, up to maxDepth in length.
+      val results = mutable.Buffer[List[S]]()
+
+      // Initialize the queue with the path containing only the start state.
+      queue.enqueue(List(s))
+      visited += ((s, 1))
+
+      while queue.nonEmpty do
+        val path = queue.dequeue()
+        val depth = path.length
+        if depth <= maxDepth then
+          // We record the path (you might skip storing if you only need to check properties).
+          results += path
+          // Explore next transitions if we're not at max depth
+          if depth < maxDepth then
+            for nextState <- system.next(path.last) do
+              val nextDepth = depth + 1
+              // Only enqueue if we haven't visited this state at this depth before
+              if !visited((nextState, nextDepth)) then
+                visited += ((nextState, nextDepth))
+                queue.enqueue(path :+ nextState)
+
+      results.toSeq
 
     // complete paths with length '<= depth' (could be optimised)
     def completePathsUpToDepth(s: S, depth: Int): Seq[Path[S]] =

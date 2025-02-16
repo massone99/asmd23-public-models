@@ -14,7 +14,7 @@ class SystemAnalysisSpec extends AnyFlatSpec with Matchers:
 
     (1 to 10).foreach { depth =>
       val ps = readersWritersPN.paths(initialMarking, depth)
-      val cps = readersWritersPN.cachedPaths(initialMarking, depth)
+      val cps = readersWritersPN.bfsPaths(initialMarking, depth)
       cps.toList should contain theSameElementsAs ps.toList
     }
   }

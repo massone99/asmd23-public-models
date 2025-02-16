@@ -3,10 +3,6 @@ package u06.exercises
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-// Extension to use 'satisfies' as an infix operator.
-extension [S](s: S)
-  def satisfies(prop: SafetyProperty[S]): Boolean = prop.holdsFor(s)
-
 class MutualExclusionRWSpec extends AnyFlatSpec with Matchers:
 
   // A simple state with writer and reader counts.

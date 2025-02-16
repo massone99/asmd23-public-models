@@ -15,3 +15,6 @@ case class MutualExclusionRW[S](writerCount: S => Int, readerCount: S => Int) ex
     val w = writerCount(s)
     val r = readerCount(s)
     !(w > 1 || (w > 0 && r > 0))
+
+extension [S](s: S)
+  infix def satisfies(prop: SafetyProperty[S]): Boolean = prop.satisfies(s)

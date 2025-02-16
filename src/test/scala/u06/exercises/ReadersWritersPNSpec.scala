@@ -13,7 +13,7 @@ class ReadersWritersPNSpec extends AnyFlatSpec with Matchers:
     val initialMarking = MultiSet(Start, Start, Mutex)
     
     // Get all possible paths up to length 100
-    val paths = readersWritersPN.cachedPaths(initialMarking, 100)
+    val paths = readersWritersPN.bfsPaths(initialMarking, 100)
     
     // Check each state in each path for violations
     val violations = for
