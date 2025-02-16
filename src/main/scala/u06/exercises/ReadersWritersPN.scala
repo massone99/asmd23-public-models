@@ -8,28 +8,21 @@ import u06.utils.MultiSet
 object ReaderWriterPN:
 
   enum Place:
-    case P1, P2, P3, P4, P5, P6, P7
-  
+    case Start, Idle, Mutex, WaitReading, Reading, WaitWriting, Writing
   export Place.*
 
-  def readerWriterPNet: System[MultiSet[Place]] = PetriNet[Place](
-    // t1
-    MultiSet(P1) ~~> MultiSet(P2),
-    // t2
-    MultiSet(P2) ~~> MultiSet(P3),
-    // t3
-    MultiSet(P2) ~~> MultiSet(P4),
-    // t4
-    MultiSet(P3) ~~> MultiSet(P5),
-    // t5
-    (MultiSet(P4) ~~> MultiSet(P7)) ^^^ MultiSet(P6), // I can go to P7 only if P6 is empty
-    // t6
-    MultiSet(P6) ~~> MultiSet(P1),
-    // t7
-    MultiSet(P7) ~~> MultiSet(P1, P5)
+  def readersWritersPN: System[MultiSet[Place]] = PetriNet[Place](
+    // as modeled according to the slides
+    MultiSet(Start) ~~> MultiSet(Idle),
+    MultiSet(Idle) ~~> MultiSet(WaitReading),
+    MultiSet(Idle) ~~> MultiSet(WaitWriting),
+    MultiSet(WaitReading, Mutex) ~~> MultiSet(Reading, Mutex),
+    MultiSet(Reading) ~~> MultiSet(Start),
+    MultiSet(WaitWriting, Mutex) ~~> MultiSet(Writing) ^^^ MultiSet(Reading),
+    MultiSet(Writing) ~~> MultiSet(Start, Mutex)
   ).toSystem
-
 
 @main def mainReaderWriterPN(): Unit =
   import ReaderWriterPN.*
-  println(readerWriterPNet.paths(MultiSet(P1, P1), 10).toList.mkString("\n"))
+  // Initial marking with 2 processes and 1 mutex token
+  println(readersWritersPN.paths(MultiSet(Start, Start, Mutex), 10).toList.mkString("\n"))

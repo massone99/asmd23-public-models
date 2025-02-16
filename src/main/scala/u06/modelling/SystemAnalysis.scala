@@ -41,6 +41,18 @@ object SystemAnalysis:
           next <- system.next(path.last)
         yield path :+ next
 
+    def cachedPaths(s: S, depth: Int): Seq[Path[S]] =
+      // The cache keys are (state, depth)
+      val cache = collection.mutable.Map[(S, Int), Seq[Path[S]]]()
+      
+      // each intermediate call (for smaller depths) is cached. 
+      // Without the recursive helper, we are not caching the results of 
+      // intermediate calls, only caching the final overall result.
+      def retrievePaths(s: S, depth: Int): Seq[Path[S]] = cache.getOrElseUpdate((s, depth),
+        paths(s, depth)
+      )
+      retrievePaths(s, depth)
+
     // complete paths with length '<= depth' (could be optimised)
     def completePathsUpToDepth(s: S, depth: Int): Seq[Path[S]] =
       (1 to depth).to(LazyList) flatMap (paths(s, _)) filter (complete(_))
